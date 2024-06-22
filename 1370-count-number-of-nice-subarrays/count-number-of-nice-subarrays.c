@@ -1,11 +1,18 @@
 int isOdd(int num) {
     return num % 2 != 0;
 }
-int numberOfSubarrays(int* nums, int numsSize, int k) {
+
+int numberOfSubarrays(int nums[], int numsSize, int k) {
     int count = 0;
     int oddCount = 0;
-    int* oddCounter = (int*)calloc(numsSize + 1, sizeof(int));
-    oddCounter[0] = 1;
+    int oddCounter[numsSize + 1]; // Using a fixed-size array instead of calloc
+
+    // Initialize oddCounter array to zero
+    for (int i = 0; i <= numsSize; i++) {
+        oddCounter[i] = 0;
+    }
+    oddCounter[0] = 1;  // Base case for 0 odd numbers encountered initially
+
     for (int i = 0; i < numsSize; i++) {
         if (isOdd(nums[i])) {
             oddCount++;
@@ -15,6 +22,6 @@ int numberOfSubarrays(int* nums, int numsSize, int k) {
         }
         oddCounter[oddCount]++;
     }
-    free(oddCounter);
+
     return count;
 }
