@@ -5,7 +5,7 @@ char * longestCommonPrefix(char ** strs, int strsSize){
         {
             if(*(strs[0]+i) == *(strs[j]+i))
             {
-                
+                //nothing
             }
             else
             {
