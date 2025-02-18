@@ -1,0 +1,140 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+
+/**
+ *
+ * @author usernet
+ */
+package chatserver;
+
+import java.io.*;
+import java.net.*;
+
+public class ChatServer {
+    private static Socket socket;
+    private static BufferedReader input;
+    private static PrintWriter output;
+
+    public static void main(String[] args) {
+        try {
+            ServerSocket serverSocket = new ServerSocket(2712);
+            System.out.println("Server started... Waiting for client connection...");
+            socket = serverSocket.accept();
+            System.out.println("Client connected...");
+
+            input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            output = new PrintWriter(socket.getOutputStream(), true);
+
+            // threads for reading and writing
+            Thread readThread = new Thread(new ReadThread());
+            Thread writeThread = new Thread(new WriteThread());
+            
+            readThread.start();
+            writeThread.start();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    static class ReadThread implements Runnable {
+        public void run() {
+            try {
+                String message;
+                while ((message = input.readLine()) != null) {
+                    // Printing thread name and the message received
+                    System.out.println("[" + Thread.currentThread().getName() + "] Client: " + message);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    static class WriteThread implements Runnable {
+        public void run() {
+            try {
+                BufferedReader consoleInput = new BufferedReader(new InputStreamReader(System.in));
+                String message;
+                while ((message = consoleInput.readLine()) != null) {
+                    // Printing thread name and the message sent
+                    System.out.println("[" + Thread.currentThread().getName() + "] Server: " + message);
+                    output.println(message);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
+
+
+
+
+
+
+
+package chatclient;
+
+import java.io.*;
+import java.net.*;
+
+public class ChatClient {
+    private static Socket socket;
+    private static BufferedReader input;
+    private static PrintWriter output;
+
+    public static void main(String[] args) {
+        try {
+            socket = new Socket("localhost", 2712);
+            System.out.println("Connected to server...");
+
+            input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            output = new PrintWriter(socket.getOutputStream(), true);
+
+            // Starting threads for reading and writing
+            Thread readThread = new Thread(new ReadThread());
+            Thread writeThread = new Thread(new WriteThread());
+
+            readThread.start();
+            writeThread.start();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    static class ReadThread implements Runnable {
+        public void run() {
+            try {
+                String message;
+                while ((message = input.readLine()) != null) {
+                    // thread name and the message received
+                    System.out.println("[" + Thread.currentThread().getName() + "] Server: " + message);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    static class WriteThread implements Runnable {
+        public void run() {
+            try {
+                BufferedReader consoleInput = new BufferedReader(new InputStreamReader(System.in));
+                String message;
+                while ((message = consoleInput.readLine()) != null) {
+                    // thread name and the message sent
+                    System.out.println("[" + Thread.currentThread().getName() + "] Client: " + message);
+                    output.println(message);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
